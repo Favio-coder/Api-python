@@ -1,7 +1,7 @@
 import os
 import cv2
 import numpy as np
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from tensorflow.keras.models import load_model # type: ignore
 from PIL import Image
 import io
@@ -51,6 +51,30 @@ def predict():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+# Ruta para manejar las solicitudes POST para convertir imágenes en base64
+@app.route('/convert_to_base64', methods=['POST'])
+def convert_to_base64():
+    try:
+        # Obtener la imagen desde la solicitud POST
+        image_file = request.files['image']
+        
+        # Leer la imagen y convertirla en base64
+        image_data = base64.b64encode(image_file.read()).decode('utf-8')
+        
+        # Devolver la imagen en base64 como parte de la respuesta JSON
+        return jsonify({'image_base64': image_data})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/conectar', methods=['GET'])
+def conectar():
+    try:
+        return jsonify({'message': 'Conexión exitosa a la API'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
